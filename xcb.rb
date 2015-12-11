@@ -1,5 +1,7 @@
 require 'ffi'
 
+require_relative 'xcb/cookie'
+
 module XCB
   class Event < FFI::Struct
       layout :response_type, :uchar,
@@ -24,25 +26,6 @@ module XCB
       :state, :uint16,
       :same_screen, :uint8,
       :pad0, :uint8
-  end
-
-  module Cookie
-  end
-
-  class Cookie::Pointer < FFI::Struct
-    layout :sequence, :uint16
-  end
-
-  class Cookie::Geometry < FFI::Struct
-    layout :sequence, :uint16
-  end
-
-  class Cookie::QueryTree < FFI::Struct
-    layout :sequence, :uint16
-  end
-
-  class Cookie::GetWindowAttributes < FFI::Struct
-    layout :sequence, :uint16
   end
 
   class GrabPointerReply < FFI::Struct
