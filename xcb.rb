@@ -2,78 +2,9 @@ require 'ffi'
 
 require_relative 'xcb/cookie'
 require_relative 'xcb/event'
+require_relative 'xcb/reply'
 
 module XCB
-  class GrabPointerReply < FFI::Struct
-    layout :response_type, :uint8,
-      :status,:uint8,
-      :sequence, :uint16,
-      :length, :uint32
-  end
-
-  class QueryTreeReply < FFI::Struct
-    layout :response_type, :uint8,
-      :pad0, :uint8,
-      :sequence, :uint16,
-      :length, :uint32,
-      :root, :uint32,
-      :parent, :uint32,
-      :children_len, :uint16,
-      :pad1, [:uint8, 14]
-
-  end
-
-  class GeometryReply < FFI::Struct
-    layout :response_type, :uint8,
-      :depth, :uint8,
-      :sequence, :uint16,
-      :length, :uint32,
-      :root, :uint32,
-      :x, :int16,
-      :y, :int16,
-      :width, :uint16,
-      :height, :uint16,
-      :border_width, :uint16,
-      :pad0, [:uint8, 2]
-  end
-
-  class QueryPointerReply < FFI::Struct
-    layout :response_type, :uint8,
-      :same_screen, :uint8,
-      :sequence, :uint16,
-      :length, :uint32,
-      :root, :uint32,
-      :child, :uint32,
-      :root_x, :int16,
-      :root_y, :int16,
-      :win_x, :int16,
-      :win_y, :int16,
-      :mask, :uint16,
-      :pad, [:uint8, 2]
-  end
-
-  class GetWindowAttributesReply < FFI::Struct
-    layout :response_type, :uint8,
-      :backing_store, :uint8,
-      :sequence, :uint16,
-      :length, :uint32,
-      :visual, :uint32,
-      :_class, :uint16,
-      :bit_gravity, :uint8,
-      :win_gravity, :uint8,
-      :backing_planes, :uint32,
-      :backing_pixel, :uint32,
-      :save_under, :uint8,
-      :map_is_installed, :uint8,
-      :map_state, :uint8,
-      :override_redirect, :uint8,
-      :colormap, :uint32,
-      :all_event_masks, :uint32,
-      :your_event_mask, :uint32,
-      :do_not_propogate_mask, :uint16,
-      :pad0, [:uint8, 2]
-  end
-
   class Screen < FFI::Struct
     layout :root, :uint32,
       :default_colormap, :uint32,
@@ -155,25 +86,25 @@ module XCB
   xcb_function :grab_button, [:pointer, :uint8,  :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint8, :uint16], :void
 
   xcb_function :grab_pointer, [:pointer, :uint8, :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint32], XCB::Cookie::Pointer.by_value
-  xcb_function :grab_pointer_reply, [:pointer, XCB::Cookie::Pointer.by_value, :pointer], XCB::GrabPointerReply.by_ref
+  xcb_function :grab_pointer_reply, [:pointer, XCB::Cookie::Pointer.by_value, :pointer], XCB::Reply::GrabPointer.by_ref
 
   xcb_function :configure_window, [:pointer, :uint32, :uint16, :pointer], :void
 
 
   xcb_function :query_pointer, [:pointer, :uint32], XCB::Cookie::Pointer.by_value
-  xcb_function :query_pointer_reply, [:pointer, XCB::Cookie::Pointer.by_value, :pointer], XCB::QueryPointerReply.by_ref
+  xcb_function :query_pointer_reply, [:pointer, XCB::Cookie::Pointer.by_value, :pointer], XCB::Reply::QueryPointer.by_ref
 
   xcb_function :get_geometry, [:pointer, :uint32], XCB::Cookie::Geometry.by_value
-  xcb_function :get_geometry_reply, [:pointer, XCB::Cookie::Geometry.by_value, :pointer], XCB::GeometryReply.by_ref
+  xcb_function :get_geometry_reply, [:pointer, XCB::Cookie::Geometry.by_value, :pointer], XCB::Reply::Geometry.by_ref
 
   xcb_function :query_tree, [:pointer, :uint32], XCB::Cookie::QueryTree.by_value
-  xcb_function :query_tree_reply, [:pointer, XCB::Cookie::QueryTree.by_value, :pointer], XCB::QueryTreeReply.by_ref
+  xcb_function :query_tree_reply, [:pointer, XCB::Cookie::QueryTree.by_value, :pointer], XCB::Reply::QueryTree.by_ref
 
-  xcb_function :query_tree_children_length, [XCB::QueryTreeReply.by_ref], :int
-  xcb_function :query_tree_children, [XCB::QueryTreeReply.by_ref], :pointer
+  xcb_function :query_tree_children_length, [XCB::Reply::QueryTree.by_ref], :int
+  xcb_function :query_tree_children, [XCB::Reply::QueryTree.by_ref], :pointer
 
   xcb_function :get_window_attributes, [:pointer, :uint32], XCB::Cookie::GetWindowAttributes.by_value
-  xcb_function :get_window_attributes_reply, [:pointer, XCB::Cookie::GetWindowAttributes.by_value, :pointer], XCB::GetWindowAttributesReply.by_ref
+  xcb_function :get_window_attributes_reply, [:pointer, XCB::Cookie::GetWindowAttributes.by_value, :pointer], XCB::Reply::GetWindowAttributes.by_ref
 
   xcb_function :ungrab_pointer, [:pointer, :uint16], :void
 
