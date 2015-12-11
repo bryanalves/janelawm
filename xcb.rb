@@ -167,49 +167,53 @@ module XCB
 
   ffi_lib 'xcb'
 
-  attach_function :xcb_connect, [:string, :int], :pointer
-  attach_function :xcb_disconnect, [:pointer], :void
-  attach_function :xcb_get_setup, [:pointer], :pointer
-  attach_function :xcb_wait_for_event, [:pointer], XCB::Event.by_ref, {blocking: true}
-  attach_function :xcb_poll_for_event, [:pointer], XCB::Event.by_ref
+  def self.xcb_function(name, args, retval, **options)
+    attach_function name, :"xcb_#{name}", args, retval, options
+  end
 
-  attach_function :xcb_get_file_descriptor, [:pointer], :int
-  attach_function :xcb_connection_has_error, [:pointer], :int
-  attach_function :xcb_flush, [:pointer], :int
-  attach_function :xcb_setup_roots_iterator, [:pointer], XCB::ScreenIterator.by_value
-  attach_function :xcb_get_setup, [:pointer], XCB::Setup.by_ref
-  attach_function :xcb_screen_next, [XCB::ScreenIterator.by_ref], :void
+  xcb_function :connect, [:string, :int], :pointer
+  xcb_function :disconnect, [:pointer], :void
+  xcb_function :get_setup, [:pointer], :pointer
+  xcb_function :wait_for_event, [:pointer], XCB::Event.by_ref, {blocking: true}
+  xcb_function :poll_for_event, [:pointer], XCB::Event.by_ref
 
-  attach_function :xcb_change_window_attributes, [:pointer, :uint32, :uint32, :pointer], :void
+  xcb_function :get_file_descriptor, [:pointer], :int
+  xcb_function :connection_has_error, [:pointer], :int
+  xcb_function :flush, [:pointer], :int
+  xcb_function :setup_roots_iterator, [:pointer], XCB::ScreenIterator.by_value
+  xcb_function :get_setup, [:pointer], XCB::Setup.by_ref
+  xcb_function :screen_next, [XCB::ScreenIterator.by_ref], :void
+
+  xcb_function :change_window_attributes, [:pointer, :uint32, :uint32, :pointer], :void
 
   #xcb_window_t = :uint32
   #xcb_cursor_t = :uint32
   #xcb_timestamp_t = :uint32
   #xcb_drawable_t = :uint32
-  attach_function :xcb_grab_button, [:pointer, :uint8,  :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint8, :uint16], :void
+  xcb_function :grab_button, [:pointer, :uint8,  :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint8, :uint16], :void
 
-  attach_function :xcb_grab_pointer, [:pointer, :uint8, :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint32], XCB::PointerCookie.by_value
-  attach_function :xcb_grab_pointer_reply, [:pointer, XCB::PointerCookie.by_value, :pointer], XCB::GrabPointerReply.by_ref
+  xcb_function :grab_pointer, [:pointer, :uint8, :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint32], XCB::PointerCookie.by_value
+  xcb_function :grab_pointer_reply, [:pointer, XCB::PointerCookie.by_value, :pointer], XCB::GrabPointerReply.by_ref
 
-  attach_function :xcb_configure_window, [:pointer, :uint32, :uint16, :pointer], :void
+  xcb_function :configure_window, [:pointer, :uint32, :uint16, :pointer], :void
 
 
-  attach_function :xcb_query_pointer, [:pointer, :uint32], XCB::PointerCookie.by_value
-  attach_function :xcb_query_pointer_reply, [:pointer, XCB::PointerCookie.by_value, :pointer], XCB::QueryPointerReply.by_ref
+  xcb_function :query_pointer, [:pointer, :uint32], XCB::PointerCookie.by_value
+  xcb_function :query_pointer_reply, [:pointer, XCB::PointerCookie.by_value, :pointer], XCB::QueryPointerReply.by_ref
 
-  attach_function :xcb_get_geometry, [:pointer, :uint32], XCB::GeometryCookie.by_value
-  attach_function :xcb_get_geometry_reply, [:pointer, XCB::GeometryCookie.by_value, :pointer], XCB::GeometryReply.by_ref
+  xcb_function :get_geometry, [:pointer, :uint32], XCB::GeometryCookie.by_value
+  xcb_function :get_geometry_reply, [:pointer, XCB::GeometryCookie.by_value, :pointer], XCB::GeometryReply.by_ref
 
-  attach_function :xcb_query_tree, [:pointer, :uint32], XCB::QueryTreeCookie.by_value
-  attach_function :xcb_query_tree_reply, [:pointer, XCB::QueryTreeCookie.by_value, :pointer], XCB::QueryTreeReply.by_ref
+  xcb_function :query_tree, [:pointer, :uint32], XCB::QueryTreeCookie.by_value
+  xcb_function :query_tree_reply, [:pointer, XCB::QueryTreeCookie.by_value, :pointer], XCB::QueryTreeReply.by_ref
 
-  attach_function :xcb_query_tree_children_length, [XCB::QueryTreeReply.by_ref], :int
-  attach_function :xcb_query_tree_children, [XCB::QueryTreeReply.by_ref], :pointer
+  xcb_function :query_tree_children_length, [XCB::QueryTreeReply.by_ref], :int
+  xcb_function :query_tree_children, [XCB::QueryTreeReply.by_ref], :pointer
 
-  attach_function :xcb_get_window_attributes, [:pointer, :uint32], XCB::GetWindowAttributesCookie.by_value
-  attach_function :xcb_get_window_attributes_reply, [:pointer, XCB::GetWindowAttributesCookie.by_value, :pointer], XCB::GetWindowAttributesReply.by_ref
+  xcb_function :get_window_attributes, [:pointer, :uint32], XCB::GetWindowAttributesCookie.by_value
+  xcb_function :get_window_attributes_reply, [:pointer, XCB::GetWindowAttributesCookie.by_value, :pointer], XCB::GetWindowAttributesReply.by_ref
 
-  attach_function :xcb_ungrab_pointer, [:pointer, :uint16], :void
+  xcb_function :ungrab_pointer, [:pointer, :uint16], :void
 
   CW_EVENT_MASK = 2048
   EVENT_MASK_NO_EVENT = 0

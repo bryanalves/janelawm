@@ -6,16 +6,16 @@ class Simple
 end
 
 wm = Simple.new
-connection = wm.xcb_connect(nil, 0)
-connection_fd = IO.open(wm.xcb_get_file_descriptor(connection))
+connection = wm.connect(nil, 0)
+connection_fd = IO.open(wm.get_file_descriptor(connection))
 
-setup = wm.xcb_get_setup(connection)
-iter = wm.xcb_setup_roots_iterator(setup)
+setup = wm.get_setup(connection)
+iter = wm.setup_roots_iterator(setup)
 
 screen = iter[:data]
 
 def setup_mouse(wm, connection, win)
-  wm.xcb_grab_button(connection,
+  wm.grab_button(connection,
                 1,
                 win,
                 XCB::EVENT_MASK_BUTTON_PRESS,
@@ -27,25 +27,25 @@ def setup_mouse(wm, connection, win)
                 XCB::MOD_MASK_1)
 end
 
-tree_reply = wm.xcb_query_tree_reply(connection, wm.xcb_query_tree(connection, screen[:root]), nil)
-child_count = wm.xcb_query_tree_children_length(tree_reply)
-children = wm.xcb_query_tree_children(tree_reply);
+tree_reply = wm.query_tree_reply(connection, wm.query_tree(connection, screen[:root]), nil)
+child_count = wm.query_tree_children_length(tree_reply)
+children = wm.query_tree_children(tree_reply);
 
 children = children.read_array_of_type(:uint32, :read_uint32, child_count)
 
 children.each do |child|
-  #attr = wm.xcb_get_window_attributes_reply(connection, wm.xcb_get_window_attributes(connection, child), nil)
+  #attr = wm.get_window_attributes_reply(connection, wm.get_window_attributes(connection, child), nil)
   setup_mouse(wm, connection, child)
 end
 
-wm.xcb_flush(connection)
+wm.flush(connection)
 
 def mousemotion(wm, connection, connection_fd, screen, win)
-  geom = wm.xcb_get_geometry_reply(connection, wm.xcb_get_geometry(connection, win), nil)
-  pointer = wm.xcb_query_pointer_reply(connection, wm.xcb_query_pointer(connection, screen[:root]), nil)
+  geom = wm.get_geometry_reply(connection, wm.get_geometry(connection, win), nil)
+  pointer = wm.query_pointer_reply(connection, wm.query_pointer(connection, screen[:root]), nil)
 
-  wm.xcb_grab_pointer_reply(connection,
-    wm.xcb_grab_pointer(connection,
+  wm.grab_pointer_reply(connection,
+    wm.grab_pointer(connection,
                         0,
                         screen[:root],
                         XCB::EVENT_MASK_BUTTON_PRESS | XCB::EVENT_MASK_BUTTON_RELEASE | XCB::EVENT_MASK_BUTTON_MOTION | XCB::EVENT_MASK_POINTER_MOTION,
@@ -58,11 +58,11 @@ def mousemotion(wm, connection, connection_fd, screen, win)
 
   ungrab = false
   while !ungrab do
-    wm.xcb_flush(connection)
-    #res = wm.xcb_wait_for_event(connection)
+    wm.flush(connection)
+    #res = wm.wait_for_event(connection)
     res = wait_for_event(wm, connection, connection_fd)
     event = res[:response_type] & ~0x80
-    wm.xcb_flush(connection)
+    wm.flush(connection)
 
     case event
     when XCB::MOTION_NOTIFY
@@ -76,8 +76,8 @@ def mousemotion(wm, connection, connection_fd, screen, win)
 
       coords = FFI::MemoryPointer.new(:int, 2)
       coords.write_array_of_int([target_x, target_y])
-      wm.xcb_configure_window(connection, event_win, XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, coords)
-      wm.xcb_flush(connection)
+      wm.configure_window(connection, event_win, XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, coords)
+      wm.flush(connection)
 
     when XCB::BUTTON_RELEASE
       ungrab = true
@@ -87,8 +87,8 @@ def mousemotion(wm, connection, connection_fd, screen, win)
     end
   end
 
-  wm.xcb_ungrab_pointer(connection, XCB::CURRENT_TIME)
-  wm.xcb_flush(connection)
+  wm.ungrab_pointer(connection, XCB::CURRENT_TIME)
+  wm.flush(connection)
 
   exit(0)
 end
@@ -109,7 +109,7 @@ def wait_for_event(wm, connection, connection_fd, conn_sock = nil)
   until event
     events, _, _ = IO.select(fds, nil, nil, 0.25)
     if events
-      event = wm.xcb_poll_for_event(connection) if events.include?(connection_fd)
+      event = wm.poll_for_event(connection) if events.include?(connection_fd)
       sock_handler(conn_sock) if events.include?(conn_sock)
     end
   end
@@ -137,11 +137,11 @@ while true do
   win = res[:pad][2]
   event = res[:response_type] & ~0x80
 
-  wm.xcb_flush(connection)
+  wm.flush(connection)
   case event
   when XCB::BUTTON_PRESS
     mousemotion(wm, connection, connection_fd, screen, win)
-    wm.xcb_flush(connection)
+    wm.flush(connection)
   else
     puts 'UNKNOWN'
     puts event
