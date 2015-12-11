@@ -1,4 +1,5 @@
 require 'ffi'
+require_relative 'xcb/typedefs'
 
 require_relative 'xcb/cookie'
 require_relative 'xcb/event'
@@ -20,7 +21,7 @@ module XCB
   xcb_function :connect, [:string, :int], :pointer
   xcb_function :disconnect, [:pointer], :void
   xcb_function :get_setup, [:pointer], :pointer
-  xcb_function :wait_for_event, [:pointer], XCB::Event::Generic.by_ref, {blocking: true}
+  xcb_function :wait_for_event, [:pointer], XCB::Event::Generic.by_ref, { blocking: true }
   xcb_function :poll_for_event, [:pointer], XCB::Event::Generic.by_ref
 
   xcb_function :get_file_descriptor, [:pointer], :int
@@ -32,17 +33,12 @@ module XCB
 
   xcb_function :change_window_attributes, [:pointer, :uint32, :uint32, :pointer], :void
 
-  #xcb_window_t = :uint32
-  #xcb_cursor_t = :uint32
-  #xcb_timestamp_t = :uint32
-  #xcb_drawable_t = :uint32
   xcb_function :grab_button, [:pointer, :uint8,  :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint8, :uint16], :void
 
   xcb_function :grab_pointer, [:pointer, :uint8, :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint32], XCB::Cookie::Pointer.by_value
   xcb_function :grab_pointer_reply, [:pointer, XCB::Cookie::Pointer.by_value, :pointer], XCB::Reply::GrabPointer.by_ref
 
   xcb_function :configure_window, [:pointer, :uint32, :uint16, :pointer], :void
-
 
   xcb_function :query_pointer, [:pointer, :uint32], XCB::Cookie::Pointer.by_value
   xcb_function :query_pointer_reply, [:pointer, XCB::Cookie::Pointer.by_value, :pointer], XCB::Reply::QueryPointer.by_ref

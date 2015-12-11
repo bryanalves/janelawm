@@ -4,7 +4,7 @@ module XCB
            :depth, :uint8,
            :sequence, :uint16,
            :length, :uint32,
-           :root, :uint32,
+           :root, :window,
            :x, :int16,
            :y, :int16,
            :width, :uint16,

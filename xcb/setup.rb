@@ -17,8 +17,8 @@ module XCB
            :bitmap_format_bit_order, :uint8,
            :bitmap_format_scanline_unit, :uint8,
            :bitmap_format_scanline_pad, :uint8,
-           :min_keycode, :uint8,
-           :max_keycode, :uint8,
+           :min_keycode, :keycode,
+           :max_keycode, :keycode,
            :pad1, [:uint8, 4]
   end
 end
