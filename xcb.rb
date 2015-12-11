@@ -4,56 +4,9 @@ require_relative 'xcb/cookie'
 require_relative 'xcb/event'
 require_relative 'xcb/reply'
 
-module XCB
-  class Screen < FFI::Struct
-    layout :root, :uint32,
-      :default_colormap, :uint32,
-      :white_pixel, :uint32,
-      :black_pixel, :uint32,
-      :current_input_masks, :uint32,
-      :width_in_pixels, :uint16,
-      :height_in_pixels, :uint16,
-      :width_in_millimeters, :uint16,
-      :height_in_millimeters, :uint16,
-      :min_installed_maps, :uint16,
-      :max_installed_maps, :uint16,
-      :root_visual, :uint32,
-      :backing_stores, :uint8,
-      :save_unders, :uint8,
-      :root_depth, :uint8,
-      :allowed_depths_len, :uint8
-  end
-
-  class ScreenIterator < FFI::Struct
-    layout :data, XCB::Screen.by_ref,
-      :rem, :int,
-      :index, :int
-  end
-
-  class Setup < FFI::Struct
-    layout :status, :uint8,
-      :pad0, :uint8,
-      :protocol_major_version, :uint16,
-      :protocol_minor_version, :uint16,
-      :length, :uint16,
-      :release_number, :uint32,
-      :resource_id_base, :uint32,
-      :resource_id_mask, :uint32,
-
-      :motion_buffer_size, :uint32,
-      :vendor_len, :uint16,
-      :maximum_request_length, :uint16,
-      :roots_len, :uint8,
-      :pixmap_formats_len, :uint8,
-      :image_byte_order, :uint8,
-      :bitmap_format_bit_order, :uint8,
-      :bitmap_format_scanline_unit, :uint8,
-      :bitmap_format_scanline_pad, :uint8,
-      :min_keycode, :uint8,
-      :max_keycode, :uint8,
-      :pad1, [:uint8, 4]
-  end
-end
+require_relative 'xcb/screen'
+require_relative 'xcb/screen_iterator'
+require_relative 'xcb/setup'
 
 module XCB
   extend FFI::Library
