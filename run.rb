@@ -61,7 +61,7 @@ def mousemotion(connection, connection_fd, screen, win)
 
     case event
     when XCB::MOTION_NOTIFY
-      mne = XCB::MotionNotifyEvent.new res.to_ptr
+      mne = XCB::Event::MotionNotify.new res.to_ptr
       event_win = mne[:child]
       ev_root_x = mne[:root_x]
       ev_root_y = mne[:root_y]

@@ -1,33 +1,9 @@
 require 'ffi'
 
 require_relative 'xcb/cookie'
+require_relative 'xcb/event'
 
 module XCB
-  class Event < FFI::Struct
-      layout :response_type, :uchar,
-            :pad0, :uchar,
-            :sequence, :short,
-            :pad, [:uint, 7],
-            :full_sequence, :uint
-  end
-
-  class MotionNotifyEvent < FFI::Struct
-    layout :response_type, :uint8,
-      :detail, :uint8,
-      :sequence, :uint16,
-      :time, :uint32,
-      :root, :uint32,
-      :event, :uint32,
-      :child, :uint32,
-      :root_x, :int16,
-      :root_y, :int16,
-      :event_x, :int16,
-      :event_y, :int16,
-      :state, :uint16,
-      :same_screen, :uint8,
-      :pad0, :uint8
-  end
-
   class GrabPointerReply < FFI::Struct
     layout :response_type, :uint8,
       :status,:uint8,
@@ -160,8 +136,8 @@ module XCB
   xcb_function :connect, [:string, :int], :pointer
   xcb_function :disconnect, [:pointer], :void
   xcb_function :get_setup, [:pointer], :pointer
-  xcb_function :wait_for_event, [:pointer], XCB::Event.by_ref, {blocking: true}
-  xcb_function :poll_for_event, [:pointer], XCB::Event.by_ref
+  xcb_function :wait_for_event, [:pointer], XCB::Event::Generic.by_ref, {blocking: true}
+  xcb_function :poll_for_event, [:pointer], XCB::Event::Generic.by_ref
 
   xcb_function :get_file_descriptor, [:pointer], :int
   xcb_function :connection_has_error, [:pointer], :int
