@@ -46,7 +46,7 @@ def mousemotion(connection, connection_fd, screen, win)
                         XCB::EVENT_MASK_BUTTON_PRESS | XCB::EVENT_MASK_BUTTON_RELEASE | XCB::EVENT_MASK_BUTTON_MOTION | XCB::EVENT_MASK_POINTER_MOTION,
                         XCB::GRAB_MODE_ASYNC,
                         XCB::GRAB_MODE_ASYNC,
-                        XCB::NONE,
+                        win,
                         XCB::NONE,
                         XCB::CURRENT_TIME),
   nil)
