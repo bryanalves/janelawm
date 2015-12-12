@@ -7,93 +7,97 @@ module XCB
     attach_function name, :"xcb_#{name}", args, retval, options
   end
 
+  def self.xcb_connection_function(name, args, retval, **options)
+    xcb_function name, [:xcb_connection] + args, retval, options
+  end
+
   xcb_function :connect,
     [:string, :int],
     :xcb_connection
 
-  xcb_function :disconnect,
-    [:xcb_connection],
+  xcb_connection_function :disconnect,
+    [],
     :void
 
-  xcb_function :get_setup,
-    [:xcb_connection],
+  xcb_connection_function :get_setup,
+    [],
     :pointer
 
-  xcb_function :wait_for_event,
-    [:xcb_connection],
+  xcb_connection_function :wait_for_event,
+    [],
     XCB::Event::Generic.by_ref,
     { blocking: true }
 
-  xcb_function :poll_for_event,
-    [:xcb_connection],
+  xcb_connection_function :poll_for_event,
+    [],
     XCB::Event::Generic.by_ref
 
-  xcb_function :get_file_descriptor,
-    [:xcb_connection],
+  xcb_connection_function :get_file_descriptor,
+    [],
     :int
 
-  xcb_function :connection_has_error,
-    [:xcb_connection],
+  xcb_connection_function :connection_has_error,
+    [],
     :int
 
-  xcb_function :flush,
-    [:xcb_connection],
+  xcb_connection_function :flush,
+    [],
     :int
 
-  xcb_function :setup_roots_iterator,
-    [:xcb_connection],
+  xcb_connection_function :setup_roots_iterator,
+    [],
     XCB::ScreenIterator.by_value
 
-  xcb_function :get_setup,
-    [:xcb_connection],
+  xcb_connection_function :get_setup,
+    [],
     XCB::Setup.by_ref
 
   xcb_function :screen_next,
     [XCB::ScreenIterator.by_ref],
     :void
 
-  xcb_function :change_window_attributes,
-    [:xcb_connection, :uint32, :uint32, :pointer],
+  xcb_connection_function :change_window_attributes,
+    [:uint32, :uint32, :pointer],
     :void
 
-  xcb_function :grab_button,
-    [:xcb_connection, :uint8,  :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint8, :uint16],
+  xcb_connection_function :grab_button,
+    [:uint8,  :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint8, :uint16],
     :void
 
-  xcb_function :grab_pointer,
-    [:xcb_connection, :uint8, :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint32],
+  xcb_connection_function :grab_pointer,
+    [:uint8, :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint32],
     XCB::Cookie::Pointer.by_value
 
-  xcb_function :grab_pointer_reply,
-    [:xcb_connection, XCB::Cookie::Pointer.by_value, :pointer],
+  xcb_connection_function :grab_pointer_reply,
+    [XCB::Cookie::Pointer.by_value, :pointer],
     XCB::Reply::GrabPointer.by_ref
 
-  xcb_function :configure_window,
-    [:xcb_connection, :uint32, :uint16, :pointer],
+  xcb_connection_function :configure_window,
+    [:uint32, :uint16, :pointer],
     :void
 
-  xcb_function :query_pointer,
-    [:xcb_connection, :uint32],
+  xcb_connection_function :query_pointer,
+    [:uint32],
     XCB::Cookie::Pointer.by_value
 
-  xcb_function :query_pointer_reply,
-    [:xcb_connection, XCB::Cookie::Pointer.by_value, :pointer],
+  xcb_connection_function :query_pointer_reply,
+    [XCB::Cookie::Pointer.by_value, :pointer],
     XCB::Reply::QueryPointer.by_ref
 
-  xcb_function :get_geometry,
-    [:xcb_connection, :uint32],
+  xcb_connection_function :get_geometry,
+    [:uint32],
     XCB::Cookie::Geometry.by_value
 
-  xcb_function :get_geometry_reply,
-    [:xcb_connection, XCB::Cookie::Geometry.by_value, :pointer],
+  xcb_connection_function :get_geometry_reply,
+    [XCB::Cookie::Geometry.by_value, :pointer],
     XCB::Reply::Geometry.by_ref
 
-  xcb_function :query_tree,
-    [:xcb_connection, :uint32],
+  xcb_connection_function :query_tree,
+    [:uint32],
     XCB::Cookie::QueryTree.by_value
 
-  xcb_function :query_tree_reply,
-    [:xcb_connection, XCB::Cookie::QueryTree.by_value, :pointer],
+  xcb_connection_function :query_tree_reply,
+    [XCB::Cookie::QueryTree.by_value, :pointer],
     XCB::Reply::QueryTree.by_ref
 
   xcb_function :query_tree_children_length,
@@ -104,15 +108,15 @@ module XCB
     [XCB::Reply::QueryTree.by_ref],
     :pointer
 
-  xcb_function :get_window_attributes,
-    [:xcb_connection, :uint32],
+  xcb_connection_function :get_window_attributes,
+    [:uint32],
     XCB::Cookie::GetWindowAttributes.by_value
 
-  xcb_function :get_window_attributes_reply,
-    [:xcb_connection, XCB::Cookie::GetWindowAttributes.by_value, :pointer],
+  xcb_connection_function :get_window_attributes_reply,
+    [XCB::Cookie::GetWindowAttributes.by_value, :pointer],
     XCB::Reply::GetWindowAttributes.by_ref
 
-  xcb_function :ungrab_pointer,
-    [:xcb_connection, :uint16],
+  xcb_connection_function :ungrab_pointer,
+    [:uint16],
     :void
 end
