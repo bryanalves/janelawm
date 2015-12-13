@@ -12,7 +12,7 @@ def setup_mouse(conn, win)
   conn.grab_button(1,
                 win,
                 XCB::EVENT_MASK_BUTTON_PRESS,
-                XCB::GRAB_MODE_SYNC,
+                XCB::GRAB_MODE_ASYNC,
                 XCB::GRAB_MODE_ASYNC,
                 XCB::WINDOW_NONE,
                 XCB::NONE,
@@ -20,11 +20,7 @@ def setup_mouse(conn, win)
                 XCB::MOD_MASK_1)
 end
 
-tree_reply = conn.query_tree_reply(conn.query_tree(screen[:root]), nil)
-child_count = XCB.query_tree_children_length(tree_reply)
-children = XCB.query_tree_children(tree_reply)
-
-children = children.read_array_of_type(:uint32, :read_uint32, child_count)
+children = conn.children_of_screen(screen[:root])
 
 children.each do |child|
   #attr = conn.get_window_attributes_reply(conn.get_window_attributes(child), nil)
