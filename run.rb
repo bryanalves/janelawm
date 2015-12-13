@@ -45,7 +45,7 @@ def mousemotion(conn, screen, win)
     conn.flush
     #res = conn.wait_for_event
     res = wait_for_event(conn)
-    event = res[:response_type] & ~0x80
+    event = res.event_type
     conn.flush
 
     case event
@@ -119,7 +119,7 @@ while true do
   res = wait_for_event(conn, conn_sock)
   puts res
   win = res[:pad][2]
-  event = res[:response_type] & ~0x80
+  event = res.event_type
 
   conn.flush
   case event

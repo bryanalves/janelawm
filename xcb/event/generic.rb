@@ -5,5 +5,9 @@ module XCB
            :sequence, :short,
            :pad, [:uint, 7],
            :full_sequence, :uint
+
+    def event_type
+      self[:response_type] & ~0x80
+    end
   end
 end
