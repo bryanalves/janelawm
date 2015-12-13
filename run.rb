@@ -40,6 +40,9 @@ def mousemotion(conn, screen, win)
                         XCB::CURRENT_TIME),
   nil)
 
+  base_x = geom[:x] - pointer[:root_x]
+  base_y = geom[:y] - pointer[:root_y]
+
   ungrab = false
   while !ungrab do
     conn.flush
@@ -55,8 +58,8 @@ def mousemotion(conn, screen, win)
       ev_root_x = mne[:root_x]
       ev_root_y = mne[:root_y]
 
-      target_x = geom[:x] + ev_root_x - pointer[:root_x]
-      target_y = geom[:y] + ev_root_y - pointer[:root_y]
+      target_x = base_x + ev_root_x
+      target_y = base_y + ev_root_y
 
       coords = FFI::MemoryPointer.new(:int, 2)
       coords.write_array_of_int([target_x, target_y])
