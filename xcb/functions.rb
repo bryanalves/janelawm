@@ -9,6 +9,10 @@ module XCB
 
   def self.xcb_connection_function(name, args, retval, **options)
     xcb_function name, [:xcb_connection] + args, retval, options
+
+    XCB::Connection.send(:define_method, name) do |*conn_meth_args|
+      XCB.send(name, *([@connection] + conn_meth_args))
+    end
   end
 
   xcb_function :connect,
