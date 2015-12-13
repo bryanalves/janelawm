@@ -14,5 +14,13 @@ module XCB
 
       children.read_array_of_type(:uint32, :read_uint32, child_count)
     end
+
+    def window_geometry(win)
+      get_geometry_reply(get_geometry(win), nil)
+    end
+
+    def pointer(screen)
+      query_pointer_reply(query_pointer(screen), nil)
+    end
   end
 end

@@ -30,8 +30,8 @@ end
 conn.flush
 
 def mousemotion(conn, screen, win)
-  geom = conn.get_geometry_reply(conn.get_geometry(win), nil)
-  pointer = conn.query_pointer_reply(conn.query_pointer(screen[:root]), nil)
+  geom = conn.window_geometry(win)
+  pointer = conn.pointer(screen[:root])
 
   conn.grab_pointer_reply(conn.grab_pointer(0,
                         screen[:root],
