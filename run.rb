@@ -15,7 +15,11 @@ while true do
   case event.event_type
   when XCB::BUTTON_PRESS
     win = event[:pad][2]
-    wm.mousemotion(win)
+    if event[:pad0] == 1
+      wm.mousemotion(win)
+    elsif event[:pad0] == 3
+      wm.mouseresize(win)
+    end
   else
     $stderr.puts "unknown event: #{event}"
   end
