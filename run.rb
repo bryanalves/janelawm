@@ -1,7 +1,16 @@
+#!/usr/bin/env ruby
+
 require_relative './xcb'
 require_relative './wm'
 require_relative './control_socket'
 require 'pry'
+
+def restart
+  $stderr.puts 'Restarting'
+  exec $PROGRAM_NAME
+  $stderr.puts 'Unable to restart'
+  exit(1)
+end
 
 xcb_conn = XCB::Connection.new
 ctrl_socket = ControlSocket.new
