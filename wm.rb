@@ -35,28 +35,32 @@ class Wm
   end
 
   def setup_mouse(win)
-    conn.grab_button(1,
-                     win,
-                     XCB::EVENT_MASK_BUTTON_PRESS,
-                     XCB::GRAB_MODE_ASYNC,
-                     XCB::GRAB_MODE_ASYNC,
-                     XCB::WINDOW_NONE,
-                     XCB::NONE,
-                     1,
-                     MOUSE_MASK)
-
-    conn.grab_button(1,
-                     win,
-                     XCB::EVENT_MASK_BUTTON_PRESS,
-                     XCB::GRAB_MODE_ASYNC,
-                     XCB::GRAB_MODE_ASYNC,
-                     XCB::WINDOW_NONE,
-                     XCB::NONE,
-                     3,
-                     MOUSE_MASK)
+    [1, 3].each do |button|
+      conn.grab_button(1,
+                       win,
+                       XCB::EVENT_MASK_BUTTON_PRESS,
+                       XCB::GRAB_MODE_ASYNC,
+                       XCB::GRAB_MODE_ASYNC,
+                       XCB::WINDOW_NONE,
+                       XCB::NONE,
+                       button,
+                       MOUSE_MASK)
+    end
   end
 
-  def mousemotion(win)
+  def mousemove(win)
+    base_x, base_y, _, _ = mousemotionsetup(win)
+    mouseloop(XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, base_x, base_y)
+  end
+
+  def mouseresize(win)
+    _, _, base_width, base_height = mousemotionsetup(win)
+    mouseloop(XCB::CONFIG_WINDOW_WIDTH | XCB::CONFIG_WINDOW_HEIGHT, base_width, base_height)
+  end
+
+  private
+
+  def mousemotionsetup(win)
     geom = conn.window_geometry(win)
     pointer = conn.pointer(screen[:root])
 
@@ -76,7 +80,12 @@ class Wm
 
     base_x = geom[:x] - pointer[:root_x]
     base_y = geom[:y] - pointer[:root_y]
+    base_width = geom[:width] - pointer[:root_x]
+    base_height = geom[:height] - pointer[:root_y]
+    [base_x, base_y, base_width, base_height]
+  end
 
+  def mouseloop(configure_mask, base_x, base_y)
     ungrab = false
     while !ungrab do
       conn.flush
@@ -96,7 +105,7 @@ class Wm
 
         coords = FFI::MemoryPointer.new(:int, 2)
         coords.write_array_of_int([target_x, target_y])
-        conn.configure_window(event_win, XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, coords)
+        conn.configure_window(event_win, configure_mask, coords)
         conn.flush
 
       when XCB::BUTTON_RELEASE
@@ -111,58 +120,5 @@ class Wm
     conn.flush
   end
 
-  def mouseresize(win)
-    geom = conn.window_geometry(win)
-    pointer = conn.pointer(screen[:root])
 
-    conn.grab_pointer_reply(
-      conn.grab_pointer(0,
-                        screen[:root],
-                        XCB::EVENT_MASK_BUTTON_PRESS |
-                          XCB::EVENT_MASK_BUTTON_RELEASE |
-                          XCB::EVENT_MASK_BUTTON_MOTION |
-                          XCB::EVENT_MASK_POINTER_MOTION,
-                        XCB::GRAB_MODE_ASYNC,
-                        XCB::GRAB_MODE_ASYNC,
-                        win,
-                        XCB::NONE,
-                        XCB::CURRENT_TIME),
-      nil)
-
-    base_x = geom[:width] - pointer[:root_x]
-    base_y = geom[:height] - pointer[:root_y]
-
-    ungrab = false
-    while !ungrab do
-      conn.flush
-      res = wait_for_event
-      event = res.event_type
-      conn.flush
-
-      case event
-      when XCB::MOTION_NOTIFY
-        mne = XCB::Event::MotionNotify.new res.to_ptr
-        event_win = mne[:child]
-        ev_root_x = mne[:root_x]
-        ev_root_y = mne[:root_y]
-
-        target_x = base_x + ev_root_x
-        target_y = base_y + ev_root_y
-
-        coords = FFI::MemoryPointer.new(:int, 2)
-        coords.write_array_of_int([target_x, target_y])
-        conn.configure_window(event_win, XCB::CONFIG_WINDOW_WIDTH | XCB::CONFIG_WINDOW_HEIGHT, coords)
-        conn.flush
-
-      when XCB::BUTTON_RELEASE
-        ungrab = true
-
-      else
-        $stderr.puts "Unknown event: #{event}"
-      end
-    end
-
-    conn.ungrab_pointer(XCB::CURRENT_TIME)
-    conn.flush
-  end
 end
