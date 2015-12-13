@@ -3,8 +3,6 @@ require 'pry'
 
 conn = XCB::Connection.new
 
-connection_fd = IO.open(conn.get_file_descriptor)
-
 setup = conn.get_setup
 iter = XCB.setup_roots_iterator(setup)
 
@@ -35,7 +33,7 @@ end
 
 conn.flush
 
-def mousemotion(conn, connection_fd, screen, win)
+def mousemotion(conn, screen, win)
   geom = conn.get_geometry_reply(conn.get_geometry(win), nil)
   pointer = conn.query_pointer_reply(conn.query_pointer(screen[:root]), nil)
 
@@ -53,7 +51,7 @@ def mousemotion(conn, connection_fd, screen, win)
   while !ungrab do
     conn.flush
     #res = conn.wait_for_event
-    res = wait_for_event(conn, connection_fd)
+    res = wait_for_event(conn)
     event = res[:response_type] & ~0x80
     conn.flush
 
@@ -96,13 +94,13 @@ trap 'INT' do |sig|
   exit(0)
 end
 
-def wait_for_event(conn, connection_fd, conn_sock = nil)
-  fds = [connection_fd, conn_sock].compact
+def wait_for_event(conn, conn_sock = nil)
+  fds = [conn.connection_io, conn_sock].compact
   event = nil
   until event
     events, _, _ = IO.select(fds, nil, nil, 0.25)
     if events
-      event = conn.poll_for_event if events.include?(connection_fd)
+      event = conn.poll_for_event if events.include?(conn.connection_io)
       sock_handler(conn_sock) if events.include?(conn_sock)
     end
   end
@@ -125,7 +123,7 @@ conn_sock.bind(sock_addr)
 conn_sock.listen(5)
 
 while true do
-  res = wait_for_event(conn, connection_fd, conn_sock)
+  res = wait_for_event(conn, conn_sock)
   puts res
   win = res[:pad][2]
   event = res[:response_type] & ~0x80
@@ -133,7 +131,7 @@ while true do
   conn.flush
   case event
   when XCB::BUTTON_PRESS
-    mousemotion(conn, connection_fd, screen, win)
+    mousemotion(conn, screen, win)
     conn.flush
   else
     puts 'UNKNOWN'
