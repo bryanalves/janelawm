@@ -4,6 +4,7 @@ class Wm
   attr_reader :ctrl_socket
 
   MOUSE_MASK = XCB::MOD_MASK_1
+  EVENT_POLL_TIMEOUT = 0.25
 
   def initialize(xcb_conn, ctrl_socket)
     @conn = xcb_conn
@@ -24,7 +25,7 @@ class Wm
     fds = [conn.connection_io, ctrl_socket.socket].compact
     event = nil
     until event
-      events, _, _ = IO.select(fds, nil, nil, 0.25)
+      events, _, _ = IO.select(fds, nil, nil, EVENT_POLL_TIMEOUT)
       if events
         event = conn.poll_for_event if events.include?(conn.connection_io)
         ctrl_socket.handle if events.include?(ctrl_socket.socket)
