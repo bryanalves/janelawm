@@ -15,9 +15,9 @@ while true do
   case event.event_type
   when XCB::BUTTON_PRESS
     win = event[:pad][2]
-    if event[:pad0] == 1
+    if event[:pad0] == XCB::LEFT_MOUSE
       wm.mousemove(win)
-    elsif event[:pad0] == 3
+    elsif event[:pad0] == XCB::RIGHT_MOUSE
       wm.mouseresize(win)
     end
   else

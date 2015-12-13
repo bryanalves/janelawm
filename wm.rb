@@ -35,7 +35,7 @@ class Wm
   end
 
   def setup_mouse(win)
-    [1, 3].each do |button|
+    [XCB::LEFT_MOUSE, XCB::RIGHT_MOUSE].each do |button|
       conn.grab_button(1,
                        win,
                        XCB::EVENT_MASK_BUTTON_PRESS,
