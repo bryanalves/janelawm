@@ -22,5 +22,11 @@ module XCB
     def pointer(screen)
       query_pointer_reply(query_pointer(screen), nil)
     end
+
+    def default_screen
+      setup = get_setup
+      iter = XCB.setup_roots_iterator(setup)
+      iter[:data]
+    end
   end
 end

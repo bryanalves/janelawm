@@ -3,10 +3,7 @@ require 'pry'
 
 conn = XCB::Connection.new
 
-setup = conn.get_setup
-iter = XCB.setup_roots_iterator(setup)
-
-screen = iter[:data]
+screen = conn.default_screen
 
 def setup_mouse(conn, win)
   conn.grab_button(1,
