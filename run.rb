@@ -23,6 +23,17 @@ while true
   wm.conn.flush
 
   case event.event_type
+  when XCB::MAP_REQUEST
+    $stderr.puts 'mainloop: map_request'
+  when XCB::CONFIGURE_REQUEST
+    $stderr.puts 'mainloop: configure_request'
+  when XCB::ENTER_NOTIFY
+    stack = FFI::MemoryPointer.new(:int, 1)
+    stack.write_array_of_int([0])
+    wm.conn.configure_window(event[:pad][2], XCB::CONFIG_WINDOW_STACK_MODE, stack)
+    wm.conn.set_input_focus(XCB::INPUT_FOCUS_POINTER_ROOT, event[:pad][2], XCB::NONE)
+
+    $stderr.puts 'mainloop: enter_notify'
   when XCB::BUTTON_PRESS
     $stderr.puts 'mainloop: button_press'
     win = event[:pad][2]
