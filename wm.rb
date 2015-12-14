@@ -87,12 +87,10 @@ class Wm
   end
 
   def mouseloop(configure_mask, base_x, base_y)
-    ungrab = false
-    while !ungrab do
-      conn.flush
-      res = wait_for_event
+    conn.flush
+    while true do
+      res = conn.wait_for_event
       event = res.event_type
-      conn.flush
 
       case event
       when XCB::MOTION_NOTIFY
@@ -109,9 +107,18 @@ class Wm
         conn.configure_window(event_win, configure_mask, coords)
         conn.flush
 
+      when XCB::CONFIGURE_REQUEST
+        break
+      when XCB::MAP_REQUEST
+        break
+      when XCB::BUTTON_PRESS
+        break
       when XCB::BUTTON_RELEASE
-        ungrab = true
-
+        break
+      when XCB::KEY_PRESS
+        break
+      when XCB::KEY_RELEASE
+        break
       else
         $stderr.puts "Unknown event: #{event}"
       end
