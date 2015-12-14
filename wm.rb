@@ -6,10 +6,43 @@ class Wm
   MOUSE_MASK = XCB::MOD_MASK_1
   EVENT_POLL_TIMEOUT = 0.25
 
+  NET_ATOMS = {
+    '_NET_SUPPORTED'           => nil,
+    '_NET_WM_STATE_FULLSCREEN' => nil,
+    '_NET_WM_STATE'            => nil,
+    '_NET_SUPPORTING_WM_CHECK' => nil,
+    '_NET_ACTIVE_WINDOW'       => nil,
+    '_NET_NUMBER_OF_DESKTOPS'  => nil,
+    '_NET_CURRENT_DESKTOP'     => nil,
+    '_NET_DESKTOP_GEOMETRY'    => nil,
+    '_NET_DESKTOP_VIEWPORT'    => nil,
+    '_NET_WORKAREA'            => nil,
+    '_NET_SHOWING_DESKTOP'     => nil,
+    '_NET_CLOSE_WINDOW'        => nil,
+    '_NET_WM_DESKTOP'          => nil,
+    '_NET_WM_WINDOW_TYPE'      => nil
+  }
+
+  WM_ATOMS = {
+    'WM_PROTOCOLS'     => nil,
+    'WM_DELETE_WINDOW' => nil
+  }
+
   def initialize(xcb_conn, ctrl_socket)
     @conn = xcb_conn
     @screen = conn.default_screen
     @ctrl_socket = ctrl_socket
+    setup_atoms
+  end
+
+  def setup_atoms
+    NET_ATOMS.each do |atom_name, val|
+      NET_ATOMS[atom_name] = conn.intern_atom_reply(conn.intern_atom(0, atom_name.length, atom_name), nil)[:atom]
+    end
+
+    WM_ATOMS.each do |atom_name, val|
+      WM_ATOMS[atom_name] = conn.intern_atom_reply(conn.intern_atom(0, atom_name.length, atom_name), nil)[:atom]
+    end
   end
 
   def setup_root

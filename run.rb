@@ -30,6 +30,13 @@ while true
   when XCB::ENTER_NOTIFY
     stack = FFI::MemoryPointer.new(:int, 1)
     stack.write_array_of_int([0])
+    wm.conn.change_property(XCB::PROP_MODE_REPLACE,
+                            wm.conn.screen[:root],
+                            WM.NET_ATOMS['NET_ACTIVE'],
+                            XCB::ATOM_WINDOW,
+                            32,
+                            1,
+                            event[:pad][2])
     wm.conn.configure_window(event[:pad][2], XCB::CONFIG_WINDOW_STACK_MODE, stack)
     wm.conn.set_input_focus(XCB::INPUT_FOCUS_POINTER_ROOT, event[:pad][2], XCB::NONE)
 

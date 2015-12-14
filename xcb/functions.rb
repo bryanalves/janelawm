@@ -72,6 +72,18 @@ module XCB
     [:uint8,  :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint8, :uint16],
     :void
 
+  xcb_connection_function :change_property,
+    [:uint8, :window, :atom, :atom, :uint8, :uint32, :pointer],
+    :void
+
+  xcb_connection_function :intern_atom,
+    [:uint8, :uint16, :string],
+    XCB::Cookie::InternAtom.by_value
+
+  xcb_connection_function :intern_atom_reply,
+    [XCB::Cookie::InternAtom.by_value, :pointer],
+    XCB::Reply::InternAtom.by_ref
+
   xcb_connection_function :grab_pointer,
     [:uint8, :uint32, :uint16, :uint8, :uint8, :uint32, :uint32, :uint32],
     XCB::Cookie::Pointer.by_value
