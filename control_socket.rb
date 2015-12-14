@@ -14,6 +14,7 @@ class ControlSocket
     client_socket = Socket.for_fd(fd)
     var = client_socket.readline
     client_socket.close
+    exec $PROGRAM_NAME if var.strip == 'restart'
     $stderr.puts "sock_hander: #{var}"
   end
 end
