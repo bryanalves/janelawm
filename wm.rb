@@ -28,7 +28,7 @@ class Wm
       events, _, _ = IO.select(fds, nil, nil, EVENT_POLL_TIMEOUT)
       if events
         event = conn.poll_for_event if events.include?(conn.connection_io)
-        ctrl_socket.handle if events.include?(ctrl_socket.socket)
+        handle_socket_command(ctrl_socket.command) if events.include?(ctrl_socket.socket)
       end
     end
 
@@ -121,5 +121,14 @@ class Wm
     conn.flush
   end
 
-
+  def handle_socket_command(command)
+    case command
+    when 'restart'
+      exec $PROGRAM_NAME
+    when  'flush'
+      conn.flush
+    else
+      $stderr.puts "sock_hander: #{command}"
+    end
+  end
 end

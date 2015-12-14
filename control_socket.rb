@@ -9,12 +9,11 @@ class ControlSocket
     socket.listen(5)
   end
 
-  def handle
+  def command
     fd, _ = socket.sysaccept
     client_socket = Socket.for_fd(fd)
     var = client_socket.readline
     client_socket.close
-    exec $PROGRAM_NAME if var.strip == 'restart'
-    $stderr.puts "sock_hander: #{var}"
+    var.strip
   end
 end
