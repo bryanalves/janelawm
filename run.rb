@@ -18,6 +18,24 @@ wm = Wm.new(xcb_conn, ctrl_socket)
 wm.setup_root
 wm.setup_children
 
+def enter_notify(wm, event)
+  win_pointer = FFI::MemoryPointer.new(:int, 1)
+  win_pointer.write_array_of_int([event[:pad][2]])
+  wm.conn.change_property(XCB::PROP_MODE_REPLACE,
+                          wm.screen[:root],
+                          Wm::NET_ATOMS['_NET_ACTIVE_WINDOW'],
+                          XCB::ATOM_WINDOW,
+                          32,
+                          1,
+                          win_pointer)
+
+  stack = FFI::MemoryPointer.new(:int, 1)
+  stack.write_array_of_int([0])
+  wm.conn.configure_window(event[:pad][2], XCB::CONFIG_WINDOW_STACK_MODE, stack)
+  wm.conn.set_input_focus(XCB::INPUT_FOCUS_POINTER_ROOT, event[:pad][2], XCB::NONE)
+  wm.conn.flush
+end
+
 while true
   event = wm.wait_for_event
   wm.conn.flush
@@ -27,20 +45,13 @@ while true
     $stderr.puts 'mainloop: map_request'
   when XCB::CONFIGURE_REQUEST
     $stderr.puts 'mainloop: configure_request'
+  when XCB::PROPERTY_NOTIFY
+    $stderr.puts 'mainloop: property_notify'
+  when XCB::CONFIGURE_NOTIFY
+    $stderr.puts 'mainloop: configure_notify'
   when XCB::ENTER_NOTIFY
-    stack = FFI::MemoryPointer.new(:int, 1)
-    stack.write_array_of_int([0])
-    wm.conn.change_property(XCB::PROP_MODE_REPLACE,
-                            wm.conn.screen[:root],
-                            WM.NET_ATOMS['NET_ACTIVE'],
-                            XCB::ATOM_WINDOW,
-                            32,
-                            1,
-                            event[:pad][2])
-    wm.conn.configure_window(event[:pad][2], XCB::CONFIG_WINDOW_STACK_MODE, stack)
-    wm.conn.set_input_focus(XCB::INPUT_FOCUS_POINTER_ROOT, event[:pad][2], XCB::NONE)
-
-    $stderr.puts 'mainloop: enter_notify'
+    $stderr.puts "mainloop: enter_notify #{event[:pad][2].to_s(16)}"
+    enter_notify(wm, event)
   when XCB::BUTTON_PRESS
     $stderr.puts 'mainloop: button_press'
     win = event[:pad][2]
@@ -53,3 +64,4 @@ while true
     $stderr.puts "mainloop: unknown event: #{event.event_type}"
   end
 end
+

@@ -61,10 +61,8 @@ class Wm
     children.each do |child|
       setup_mouse(child)
 
-      #events = XCB::EVENT_MASK_PROPERTY_CHANGE |
-               #XCB::EVENT_MASK_ENTER_WINDOW
+      events = XCB::EVENT_MASK_PROPERTY_CHANGE | XCB::EVENT_MASK_ENTER_WINDOW
 
-      events = XCB::EVENT_MASK_PROPERTY_CHANGE
       event_pointer = FFI::MemoryPointer.new(:int, 1)
       event_pointer.write_array_of_int([events])
 
