@@ -12,10 +12,30 @@ class Wm
     @ctrl_socket = ctrl_socket
   end
 
+  def setup_root
+    events = XCB::EVENT_MASK_SUBSTRUCTURE_REDIRECT |
+             XCB::EVENT_MASK_SUBSTRUCTURE_NOTIFY |
+             XCB::EVENT_MASK_PROPERTY_CHANGE |
+             XCB::EVENT_MASK_BUTTON_PRESS
+
+    event_pointer = FFI::MemoryPointer.new(:int, 1)
+    event_pointer.write_array_of_int([events])
+    conn.change_window_attributes(screen[:root], XCB::CW_EVENT_MASK, event_pointer)
+  end
+
   def setup_children
     children = conn.children_of_screen(screen[:root])
     children.each do |child|
       setup_mouse(child)
+
+      #events = XCB::EVENT_MASK_PROPERTY_CHANGE |
+               #XCB::EVENT_MASK_ENTER_WINDOW
+
+      events = XCB::EVENT_MASK_PROPERTY_CHANGE
+      event_pointer = FFI::MemoryPointer.new(:int, 1)
+      event_pointer.write_array_of_int([events])
+
+      conn.change_window_attributes(child, XCB::CW_EVENT_MASK, event_pointer)
     end
 
     conn.flush
@@ -112,13 +132,19 @@ class Wm
       when XCB::MAP_REQUEST
         break
       when XCB::BUTTON_PRESS
-        break
+        # break
       when XCB::BUTTON_RELEASE
         break
       when XCB::KEY_PRESS
-        break
+        # break
       when XCB::KEY_RELEASE
         break
+      when XCB::CONFIGURE_NOTIFY
+        # ignore these
+      when XCB::ENTER_NOTIFY
+        # ignore these
+      when XCB::PROPERTY_NOTIFY
+        # ignore these
       else
         $stderr.puts "Unknown event: #{event}"
       end

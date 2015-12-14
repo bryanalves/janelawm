@@ -15,6 +15,7 @@ end
 xcb_conn = XCB::Connection.new
 ctrl_socket = ControlSocket.new
 wm = Wm.new(xcb_conn, ctrl_socket)
+wm.setup_root
 wm.setup_children
 
 while true do
