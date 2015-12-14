@@ -18,12 +18,13 @@ wm = Wm.new(xcb_conn, ctrl_socket)
 wm.setup_root
 wm.setup_children
 
-while true do
+while true
   event = wm.wait_for_event
   wm.conn.flush
 
   case event.event_type
   when XCB::BUTTON_PRESS
+    $stderr.puts 'mainloop: button_press'
     win = event[:pad][2]
     if event[:pad0] == XCB::LEFT_MOUSE
       wm.mousemove(win)
@@ -31,6 +32,6 @@ while true do
       wm.mouseresize(win)
     end
   else
-    $stderr.puts "unknown event: #{event}"
+    $stderr.puts "mainloop: unknown event: #{event.event_type}"
   end
 end

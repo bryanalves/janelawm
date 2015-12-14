@@ -146,7 +146,7 @@ class Wm
       when XCB::PROPERTY_NOTIFY
         # ignore these
       else
-        $stderr.puts "Unknown event: #{event}"
+        $stderr.puts "mouseloop: unknown event: #{event}"
       end
     end
 

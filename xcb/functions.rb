@@ -23,6 +23,10 @@ module XCB
     [],
     :void
 
+  xcb_connection_function :set_input_focus,
+    [:window],
+    :void
+
   xcb_connection_function :get_setup,
     [],
     :pointer
@@ -75,6 +79,10 @@ module XCB
   xcb_connection_function :grab_pointer_reply,
     [XCB::Cookie::Pointer.by_value, :pointer],
     XCB::Reply::GrabPointer.by_ref
+
+  xcb_connection_function :set_input_focus,
+    [:uint8, :window, :timestamp],
+    :void
 
   xcb_connection_function :configure_window,
     [:uint32, :uint16, :pointer],
