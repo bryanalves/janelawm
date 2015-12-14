@@ -36,24 +36,30 @@ def enter_notify(wm, event)
   wm.conn.flush
 end
 
+def debug(msg)
+  $stderr.puts "mainloop: #{msg}"
+end
+
 while true
   event = wm.wait_for_event
   wm.conn.flush
 
+  window_hex = event[:pad][2].to_s(16)
+
   case event.event_type
   when XCB::MAP_REQUEST
-    $stderr.puts 'mainloop: map_request'
+    debug "map_request: #{window_hex}"
   when XCB::CONFIGURE_REQUEST
-    $stderr.puts 'mainloop: configure_request'
+    debug "configure_request: #{window_hex}"
   when XCB::PROPERTY_NOTIFY
-    $stderr.puts 'mainloop: property_notify'
+    debug "property_notify"
   when XCB::CONFIGURE_NOTIFY
-    $stderr.puts 'mainloop: configure_notify'
+    debug "configure_notify: #{window_hex}"
   when XCB::ENTER_NOTIFY
-    $stderr.puts "mainloop: enter_notify #{event[:pad][2].to_s(16)}"
+    debug "enter_notify: #{window_hex}"
     enter_notify(wm, event)
   when XCB::BUTTON_PRESS
-    $stderr.puts 'mainloop: button_press'
+    debug "button_press: #{window_hex}"
     win = event[:pad][2]
     if event[:pad0] == XCB::LEFT_MOUSE
       wm.mousemove(win)
