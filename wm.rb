@@ -52,7 +52,11 @@ class Wm
       end
     end
 
-    event
+    if event.event_type == 0
+      wait_for_event
+    else
+      event
+    end
   end
 
   def setup_mouse(win)
