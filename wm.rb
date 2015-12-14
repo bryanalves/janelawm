@@ -75,12 +75,12 @@ class Wm
 
   def mousemove(win)
     base_x, base_y, _, _ = mousemotionsetup(win)
-    mouseloop(XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, base_x, base_y)
+    mouseloop(win, XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, base_x, base_y)
   end
 
   def mouseresize(win)
     _, _, base_width, base_height = mousemotionsetup(win)
-    mouseloop(XCB::CONFIG_WINDOW_WIDTH | XCB::CONFIG_WINDOW_HEIGHT, base_width, base_height)
+    mouseloop(win, XCB::CONFIG_WINDOW_WIDTH | XCB::CONFIG_WINDOW_HEIGHT, base_width, base_height)
   end
 
   private
@@ -110,16 +110,17 @@ class Wm
     [base_x, base_y, base_width, base_height]
   end
 
-  def mouseloop(configure_mask, base_x, base_y)
+  def mouseloop(win, configure_mask, base_x, base_y)
+    $stderr.puts 'mouseloop'
     conn.flush
-    while true do
-      res = conn.wait_for_event
-      event = res.event_type
+    while true
+      event = conn.wait_for_event
+      conn.flush
+      next if event.event_type == 0
 
-      case event
+      case event.event_type
       when XCB::MOTION_NOTIFY
-        mne = XCB::Event::MotionNotify.new res.to_ptr
-        event_win = mne[:child]
+        mne = XCB::Event::MotionNotify.new event.to_ptr
         ev_root_x = mne[:root_x]
         ev_root_y = mne[:root_y]
 
@@ -128,7 +129,7 @@ class Wm
 
         coords = FFI::MemoryPointer.new(:int, 2)
         coords.write_array_of_int([target_x, target_y])
-        conn.configure_window(event_win, configure_mask, coords)
+        conn.configure_window(win, configure_mask, coords)
         conn.flush
 
       when XCB::CONFIGURE_REQUEST
