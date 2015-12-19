@@ -161,7 +161,6 @@ class Wm
         coords = FFI::MemoryPointer.new(:int, 2)
         coords.write_array_of_int([target_x, target_y])
         conn.configure_window(win, configure_mask, coords)
-        conn.flush
 
       when XCB::CONFIGURE_REQUEST
         break
