@@ -23,6 +23,10 @@ module XCB
     [],
     :void
 
+  xcb_connection_function :map_window,
+    [:window],
+    :void
+
   xcb_connection_function :set_input_focus,
     [:window],
     :void

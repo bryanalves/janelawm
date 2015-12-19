@@ -48,7 +48,14 @@ while true
 
   case event.event_type
   when XCB::MAP_REQUEST
-    debug "map_request: #{window_hex}"
+    win = event[:pad][1]
+    wm.conn.map_window(win)
+    coords = FFI::MemoryPointer.new(:int, 2)
+    coords.write_array_of_int([0, 0])
+    wm.conn.configure_window(win, XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, coords)
+    wm.setup_child(win)
+    wm.conn.flush
+    debug "map_request: #{win.to_s(16)}"
   when XCB::CONFIGURE_REQUEST
     debug "configure_request: #{window_hex}"
   when XCB::PROPERTY_NOTIFY

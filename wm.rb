@@ -59,17 +59,21 @@ class Wm
   def setup_children
     children = conn.children_of_screen(screen[:root])
     children.each do |child|
-      setup_mouse(child)
-
-      events = XCB::EVENT_MASK_PROPERTY_CHANGE | XCB::EVENT_MASK_ENTER_WINDOW
-
-      event_pointer = FFI::MemoryPointer.new(:int, 1)
-      event_pointer.write_array_of_int([events])
-
-      conn.change_window_attributes(child, XCB::CW_EVENT_MASK, event_pointer)
+      setup_child(child)
     end
 
     conn.flush
+  end
+
+  def setup_child(child)
+    setup_mouse(child)
+
+    events = XCB::EVENT_MASK_PROPERTY_CHANGE | XCB::EVENT_MASK_ENTER_WINDOW
+
+    event_pointer = FFI::MemoryPointer.new(:int, 1)
+    event_pointer.write_array_of_int([events])
+
+    conn.change_window_attributes(child, XCB::CW_EVENT_MASK, event_pointer)
   end
 
   def wait_for_event
