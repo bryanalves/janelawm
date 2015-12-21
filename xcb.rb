@@ -1,4 +1,3 @@
-require 'pry'
 require 'ffi'
 require_relative 'xcb/typedefs'
 require_relative 'xcb/constants'

@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'pry'
+
 require_relative './xcb'
 require_relative './wm'
 require_relative './control_socket'
