@@ -28,5 +28,12 @@ module XCB
       iter = XCB.setup_roots_iterator(setup)
       iter[:data]
     end
+
+    def window_event_listeners(win, events)
+      event_pointer = FFI::MemoryPointer.new(:int, 1)
+      event_pointer.write_array_of_int([events])
+
+      change_window_attributes(win, XCB::CW_EVENT_MASK, event_pointer)
+    end
   end
 end

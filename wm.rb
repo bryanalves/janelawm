@@ -110,11 +110,7 @@ class Wm
     setup_mouse(child)
 
     events = XCB::EVENT_MASK_PROPERTY_CHANGE | XCB::EVENT_MASK_ENTER_WINDOW
-
-    event_pointer = FFI::MemoryPointer.new(:int, 1)
-    event_pointer.write_array_of_int([events])
-
-    conn.change_window_attributes(child, XCB::CW_EVENT_MASK, event_pointer)
+    conn.window_event_listeners(events)
   end
 
   def wait_for_event
