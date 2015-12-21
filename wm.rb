@@ -241,16 +241,20 @@ class Wm
         button_press_event = XCB::Event::ButtonPress.new event.to_ptr
         # break
       when XCB::BUTTON_RELEASE
+        button_release_event = XCB::Event::ButtonPress.new event.to_ptr
         break
       when XCB::KEY_PRESS
         # break
       when XCB::KEY_RELEASE
         break
       when XCB::CONFIGURE_NOTIFY
+        configure_notify_event = XCB::Event::ConfigureNotify.new event.to_ptr
         # ignore these
       when XCB::ENTER_NOTIFY
+        enter_notify_event = XCB::Event::EnterNotify.new event.to_ptr
         # ignore these
       when XCB::PROPERTY_NOTIFY
+        property_notify_event = XCB::Event::PropertyNotify.new event.to_ptr
         # ignore these
       else
         $stderr.puts "mouseloop: unknown event: #{event}"
