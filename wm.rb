@@ -5,6 +5,7 @@ class Wm
 
   MOUSE_MASK = XCB::MOD_MASK_1
   EVENT_POLL_TIMEOUT = 0.25
+  WINDOW_EVENTS = XCB::EVENT_MASK_PROPERTY_CHANGE | XCB::EVENT_MASK_ENTER_WINDOW
 
   NET_ATOMS = {
     '_NET_SUPPORTED'           => nil,
@@ -108,9 +109,7 @@ class Wm
 
   def setup_child(child)
     setup_mouse(child)
-
-    events = XCB::EVENT_MASK_PROPERTY_CHANGE | XCB::EVENT_MASK_ENTER_WINDOW
-    conn.window_event_listeners(events)
+    conn.window_event_listeners(WINDOW_EVENTS)
   end
 
   def wait_for_event
