@@ -54,9 +54,7 @@ class Wm
              XCB::EVENT_MASK_PROPERTY_CHANGE |
              XCB::EVENT_MASK_BUTTON_PRESS
 
-    event_pointer = FFI::MemoryPointer.new(:int, 1)
-    event_pointer.write_array_of_int([events])
-    conn.change_window_attributes(screen[:root], XCB::CW_EVENT_MASK, event_pointer)
+    conn.window_event_listeners(screen[:root], events)
   end
 
   def run
