@@ -33,6 +33,8 @@ class Wm
     @screen = conn.default_screen
     @ctrl_socket = ctrl_socket
     setup_atoms
+    setup_root
+    setup_children
   end
 
   def setup_atoms
