@@ -58,6 +58,45 @@ class Wm
     conn.change_window_attributes(screen[:root], XCB::CW_EVENT_MASK, event_pointer)
   end
 
+  def run
+    while true
+      event = wait_for_event
+      conn.flush
+
+      case event.event_type
+      when XCB::MAP_REQUEST
+        win = event[:pad][1]
+        debug 'map_request'
+        map_request(win)
+
+      when XCB::CONFIGURE_REQUEST
+        debug 'configure_request'
+
+      when XCB::PROPERTY_NOTIFY
+        debug 'property_notify'
+
+      when XCB::CONFIGURE_NOTIFY
+        debug 'configure_notify'
+
+      when XCB::ENTER_NOTIFY
+        win = event[:pad][2]
+        debug 'enter_notify'
+        enter_notify(win)
+
+      when XCB::BUTTON_PRESS
+        win = event[:pad][2]
+        debug 'button_press'
+        if event[:pad0] == XCB::LEFT_MOUSE
+          mousemove(win)
+        elsif event[:pad0] == XCB::RIGHT_MOUSE
+          mouseresize(win)
+        end
+      else
+        $stderr.puts "mainloop: unknown event: #{event.event_type}"
+      end
+    end
+  end
+
   def setup_children
     children = conn.children_of_screen(screen[:root])
     children.each do |child|
@@ -231,5 +270,9 @@ class Wm
     else
       $stderr.puts "sock_hander: #{command}"
     end
+  end
+
+  def debug(msg)
+    $stderr.puts "mainloop: #{msg}"
   end
 end
