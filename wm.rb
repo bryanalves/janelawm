@@ -96,6 +96,24 @@ class Wm
     end
   end
 
+  def enter_notify(win)
+    win_pointer = FFI::MemoryPointer.new(:int, 1)
+    win_pointer.write_array_of_int([win])
+    conn.change_property(XCB::PROP_MODE_REPLACE,
+                         screen[:root],
+                         Wm::NET_ATOMS['_NET_ACTIVE_WINDOW'],
+                         XCB::ATOM_WINDOW,
+                         32,
+                         1,
+                         win_pointer)
+
+    stack = FFI::MemoryPointer.new(:int, 1)
+    stack.write_array_of_int([0])
+    conn.configure_window(win, XCB::CONFIG_WINDOW_STACK_MODE, stack)
+    conn.set_input_focus(XCB::INPUT_FOCUS_POINTER_ROOT, win, XCB::NONE)
+    conn.flush
+  end
+
   def setup_mouse(win)
     [XCB::LEFT_MOUSE, XCB::RIGHT_MOUSE].each do |button|
       conn.grab_button(1,

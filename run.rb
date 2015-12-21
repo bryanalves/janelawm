@@ -18,24 +18,6 @@ xcb_conn = XCB::Connection.new
 ctrl_socket = ControlSocket.new
 wm = Wm.new(xcb_conn, ctrl_socket)
 
-def enter_notify(wm, event)
-  win_pointer = FFI::MemoryPointer.new(:int, 1)
-  win_pointer.write_array_of_int([event[:pad][2]])
-  wm.conn.change_property(XCB::PROP_MODE_REPLACE,
-                          wm.screen[:root],
-                          Wm::NET_ATOMS['_NET_ACTIVE_WINDOW'],
-                          XCB::ATOM_WINDOW,
-                          32,
-                          1,
-                          win_pointer)
-
-  stack = FFI::MemoryPointer.new(:int, 1)
-  stack.write_array_of_int([0])
-  wm.conn.configure_window(event[:pad][2], XCB::CONFIG_WINDOW_STACK_MODE, stack)
-  wm.conn.set_input_focus(XCB::INPUT_FOCUS_POINTER_ROOT, event[:pad][2], XCB::NONE)
-  wm.conn.flush
-end
-
 def debug(msg)
   $stderr.puts "mainloop: #{msg}"
 end
@@ -64,7 +46,8 @@ while true
     debug "configure_notify: #{window_hex}"
   when XCB::ENTER_NOTIFY
     debug "enter_notify: #{window_hex}"
-    enter_notify(wm, event)
+    win = event[:pad][2]
+    wm.enter_notify(win)
   when XCB::BUTTON_PRESS
     debug "button_press: #{window_hex}"
     win = event[:pad][2]
