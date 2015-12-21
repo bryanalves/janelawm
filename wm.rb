@@ -72,6 +72,7 @@ class Wm
         map_request(win)
 
       when XCB::CONFIGURE_REQUEST
+        configure_request_event = XCB::Event::ConfigureRequest.new event.to_ptr
         debug 'configure_request'
 
       when XCB::PROPERTY_NOTIFY
@@ -229,6 +230,7 @@ class Wm
         conn.configure_window(win, configure_mask, coords)
 
       when XCB::CONFIGURE_REQUEST
+        configure_request_event = XCB::Event::ConfigureRequest.new event.to_ptr
         break
       when XCB::MAP_REQUEST
         map_request_event = XCB::Event::MapRequest.new event.to_ptr
