@@ -150,9 +150,7 @@ class Wm
 
   def map_request(win)
     conn.map_window(win)
-    coords = FFI::MemoryPointer.new(:int, 2)
-    coords.write_array_of_int([0, 0])
-    conn.configure_window(win, XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, coords)
+    conn.window_move(win, 0, 0)
     setup_child(win)
     conn.flush
   end

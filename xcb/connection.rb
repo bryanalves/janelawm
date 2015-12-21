@@ -35,5 +35,11 @@ module XCB
 
       change_window_attributes(win, XCB::CW_EVENT_MASK, event_pointer)
     end
+
+    def window_move(win, x, y)
+      coords = FFI::MemoryPointer.new(:int, 2)
+      coords.write_array_of_int([x, y])
+      configure_window(win, XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, coords)
+    end
   end
 end
