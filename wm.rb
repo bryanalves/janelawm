@@ -87,6 +87,7 @@ class Wm
         enter_notify(win)
 
       when XCB::BUTTON_PRESS
+        button_press_event = XCB::Event::ButtonPress.new event.to_ptr
         win = event[:pad][2]
         debug 'button_press'
         if event[:pad0] == XCB::LEFT_MOUSE
@@ -236,6 +237,7 @@ class Wm
         map_request_event = XCB::Event::MapRequest.new event.to_ptr
         break
       when XCB::BUTTON_PRESS
+        button_press_event = XCB::Event::ButtonPress.new event.to_ptr
         # break
       when XCB::BUTTON_RELEASE
         break
