@@ -66,6 +66,7 @@ class Wm
 
       case event.event_type
       when XCB::MAP_REQUEST
+        map_request_event = XCB::Event::MapRequest.new event.to_ptr
         win = event[:pad][1]
         debug 'map_request'
         map_request(win)
@@ -230,6 +231,7 @@ class Wm
       when XCB::CONFIGURE_REQUEST
         break
       when XCB::MAP_REQUEST
+        map_request_event = XCB::Event::MapRequest.new event.to_ptr
         break
       when XCB::BUTTON_PRESS
         # break
