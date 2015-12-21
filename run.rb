@@ -18,31 +18,29 @@ while true
   event = wm.wait_for_event
   wm.conn.flush
 
-  window_hex = event[:pad][2].to_s(16)
-
   case event.event_type
   when XCB::MAP_REQUEST
     win = event[:pad][1]
-    wm.conn.map_window(win)
-    coords = FFI::MemoryPointer.new(:int, 2)
-    coords.write_array_of_int([0, 0])
-    wm.conn.configure_window(win, XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, coords)
-    wm.setup_child(win)
-    wm.conn.flush
-    debug "map_request: #{win.to_s(16)}"
+    debug 'map_request'
+    wm.map_request(win)
+
   when XCB::CONFIGURE_REQUEST
-    debug "configure_request: #{window_hex}"
+    debug 'configure_request'
+
   when XCB::PROPERTY_NOTIFY
-    debug "property_notify"
+    debug 'property_notify'
+
   when XCB::CONFIGURE_NOTIFY
-    debug "configure_notify: #{window_hex}"
+    debug 'configure_notify'
+
   when XCB::ENTER_NOTIFY
-    debug "enter_notify: #{window_hex}"
     win = event[:pad][2]
+    debug 'enter_notify'
     wm.enter_notify(win)
+
   when XCB::BUTTON_PRESS
-    debug "button_press: #{window_hex}"
     win = event[:pad][2]
+    debug 'button_press'
     if event[:pad0] == XCB::LEFT_MOUSE
       wm.mousemove(win)
     elsif event[:pad0] == XCB::RIGHT_MOUSE

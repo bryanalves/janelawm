@@ -114,6 +114,15 @@ class Wm
     conn.flush
   end
 
+  def map_request(win)
+    conn.map_window(win)
+    coords = FFI::MemoryPointer.new(:int, 2)
+    coords.write_array_of_int([0, 0])
+    conn.configure_window(win, XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, coords)
+    setup_child(win)
+    conn.flush
+  end
+
   def setup_mouse(win)
     [XCB::LEFT_MOUSE, XCB::RIGHT_MOUSE].each do |button|
       conn.grab_button(1,
