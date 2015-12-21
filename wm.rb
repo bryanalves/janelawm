@@ -76,12 +76,15 @@ class Wm
         debug 'configure_request'
 
       when XCB::PROPERTY_NOTIFY
+        property_notify_event = XCB::Event::PropertyNotify.new event.to_ptr
         debug 'property_notify'
 
       when XCB::CONFIGURE_NOTIFY
+        configure_notify_event = XCB::Event::ConfigureNotify.new event.to_ptr
         debug 'configure_notify'
 
       when XCB::ENTER_NOTIFY
+        enter_notify_event = XCB::Event::EnterNotify.new event.to_ptr
         win = event[:pad][2]
         debug 'enter_notify'
         enter_notify(win)
