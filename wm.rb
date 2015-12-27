@@ -34,8 +34,13 @@ class Wm
     @screen = conn.default_screen
     @ctrl_socket = ctrl_socket
     setup_atoms
+    check_for_other_wm
     setup_root
     setup_children
+  end
+
+  def check_for_other_wm
+    raise "Another WM already running" unless get_ewmh_window(get_ewmh_window).nil?
   end
 
   def setup_atoms
@@ -55,6 +60,14 @@ class Wm
              XCB::EVENT_MASK_BUTTON_PRESS
 
     conn.window_event_listeners(screen[:root], events)
+  end
+
+  def get_ewmh_window(win = nil)
+    prop = conn.get_property_reply(
+      conn.get_property(0, win || screen[:root], NET_ATOMS['_NET_SUPPORTING_WM_CHECK'], XCB::ATOM_WINDOW, 0, 32),
+    nil)
+    return nil if prop.null?
+    XCB.get_property_value(prop).read_array_of_type(:uint32, :read_uint32, 1).first
   end
 
   def run
