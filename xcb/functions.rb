@@ -23,6 +23,26 @@ module XCB
     [],
     :void
 
+  xcb_connection_function :change_property,
+    [:uint8, :window, :atom, :atom, :uint8, :uint32, :pointer],
+    :void
+
+  xcb_connection_function :get_property,
+    [:uint8, :window, :atom, :atom, :uint32, :uint32],
+    XCB::Cookie::GetProperty.by_value
+
+  xcb_connection_function :get_property_reply,
+    [XCB::Cookie::GetProperty.by_value, :pointer],
+    XCB::Reply::GetProperty.by_ref
+
+  xcb_function :get_property_value,
+    [XCB::Reply::GetProperty.by_ref],
+    :pointer
+
+  xcb_function :get_property_value_length,
+    [XCB::Reply::GetProperty.by_ref],
+    :uint
+
   xcb_connection_function :map_window,
     [:window],
     :void
