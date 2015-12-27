@@ -148,7 +148,7 @@ class Wm
 
   def setup_child(child)
     setup_mouse(child)
-    conn.window_event_listeners(WINDOW_EVENTS)
+    conn.window_event_listeners(child, WINDOW_EVENTS)
   end
 
   def wait_for_event
