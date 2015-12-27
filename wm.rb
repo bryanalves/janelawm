@@ -62,11 +62,33 @@ class Wm
     conn.window_event_listeners(screen[:root], events)
   end
 
+  def get_current_desktop
+    prop = conn.get_property_reply(
+      conn.get_property(0, screen[:root], NET_ATOMS['_NET_CURRENT_DESKTOP'], XCB::ATOM_CARDINAL, 0, 32),
+    nil)
+    XCB.get_property_value(prop).read_array_of_type(:uint32, :read_uint32, 1).first
+  end
+
+  def current_desktop=(desktop)
+    p = FFI::MemoryPointer.new(:int, 1)
+    p.write_array_of_int([desktop])
+    conn.change_property(0, screen[:root], NET_ATOMS['_NET_CURRENT_DESKTOP'], XCB::ATOM_CARDINAL, 32, 1, p)
+    conn.flush
+  end
+
   def get_ewmh_window(win = nil)
     prop = conn.get_property_reply(
       conn.get_property(0, win || screen[:root], NET_ATOMS['_NET_SUPPORTING_WM_CHECK'], XCB::ATOM_WINDOW, 0, 32),
     nil)
     return nil if prop.null?
+    XCB.get_property_value(prop).read_array_of_type(:uint32, :read_uint32, 1).first
+  end
+
+  def get_number_of_desktops
+    prop = conn.get_property_reply(
+      conn.get_property(0, screen[:root], NET_ATOMS['_NET_NUMBER_OF_DESKTOPS'], XCB::ATOM_CARDINAL, 0, 32),
+    nil)
+
     XCB.get_property_value(prop).read_array_of_type(:uint32, :read_uint32, 1).first
   end
 
