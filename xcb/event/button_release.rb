@@ -1,5 +1,5 @@
 module XCB
-  class Event::ButtonRelease < FFI:Struct
+  class Event::ButtonRelease < FFI::Struct
       layout :response_type, :uint8,
              :detail, :button,
              :sequence, :uint16,

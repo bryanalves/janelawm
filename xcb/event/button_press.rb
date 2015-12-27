@@ -1,5 +1,5 @@
 module XCB
-  class Event::ButtonPress < FFI:Struct
+  class Event::ButtonPress < FFI::Struct
       layout :response_type, :uint8,
              :detail, :button,
              :sequence, :uint16,
