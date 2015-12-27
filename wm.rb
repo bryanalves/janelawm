@@ -99,31 +99,31 @@ class Wm
 
       case event.event_type
       when XCB::MAP_REQUEST
-        map_request_event = XCB::Event::MapRequest.new event.to_ptr
+        map_request_event = event.to_event
         win = event[:pad][1]
         debug 'map_request'
         map_request(win)
 
       when XCB::CONFIGURE_REQUEST
-        configure_request_event = XCB::Event::ConfigureRequest.new event.to_ptr
+        configure_request_event = event.to_event
         debug 'configure_request'
 
       when XCB::PROPERTY_NOTIFY
-        property_notify_event = XCB::Event::PropertyNotify.new event.to_ptr
+        property_notify_event = event.to_event
         debug 'property_notify'
 
       when XCB::CONFIGURE_NOTIFY
-        configure_notify_event = XCB::Event::ConfigureNotify.new event.to_ptr
+        configure_notify_event = event.to_event
         debug 'configure_notify'
 
       when XCB::ENTER_NOTIFY
-        enter_notify_event = XCB::Event::EnterNotify.new event.to_ptr
+        enter_notify_event = event.to_event
         win = event[:pad][2]
         debug 'enter_notify'
         enter_notify(win)
 
       when XCB::BUTTON_PRESS
-        button_press_event = XCB::Event::ButtonPress.new event.to_ptr
+        button_press_event = event.to_event
         win = event[:pad][2]
         debug 'button_press'
         if event[:pad0] == XCB::LEFT_MOUSE
