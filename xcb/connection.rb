@@ -42,6 +42,7 @@ module XCB
     register_connection_function :get_window_attributes
     register_connection_function :get_window_attributes_reply
     register_connection_function :ungrab_pointer
+    register_connection_function :allow_events
 
     def initialize
       @connection = XCB::connect(nil, 0)

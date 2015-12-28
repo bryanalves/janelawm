@@ -15,6 +15,10 @@ module XCB
     [:xcb_connection],
     :void
 
+  xcb_function :allow_events,
+    [:xcb_connection, :uint8, :timestamp],
+    :void
+
   xcb_function :change_property,
     [:xcb_connection, :uint8, :window, :atom, :atom, :uint8, :uint32, :pointer],
     :void

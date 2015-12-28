@@ -124,12 +124,21 @@ class Wm
 
       when XCB::BUTTON_PRESS
         button_press_event = event.to_event
-        win = event[:pad][2]
+        win = button_press_event[:event]
         debug 'button_press'
-        if event[:pad0] == XCB::LEFT_MOUSE
-          mousemove(win)
-        elsif event[:pad0] == XCB::RIGHT_MOUSE
-          mouseresize(win)
+        stack = FFI::MemoryPointer.new(:int, 1)
+        stack.write_array_of_int([0])
+        conn.configure_window(win, XCB::CONFIG_WINDOW_STACK_MODE, stack)
+
+        if (button_press_event[:state] & MOUSE_MASK == MOUSE_MASK)
+          if button_press_event[:detail] == XCB::LEFT_MOUSE
+            mousemove(win)
+          elsif button_press_event[:detail] == XCB::RIGHT_MOUSE
+            mouseresize(win)
+          end
+        else
+          conn.allow_events(XCB::ALLOW_REPLAY_POINTER, button_press_event[:time])
+          conn.flush
         end
       else
         $stderr.puts "mainloop: unknown event: #{event.event_type}"
@@ -180,9 +189,6 @@ class Wm
                          1,
                          win_pointer)
 
-    stack = FFI::MemoryPointer.new(:int, 1)
-    stack.write_array_of_int([0])
-    conn.configure_window(win, XCB::CONFIG_WINDOW_STACK_MODE, stack)
     conn.set_input_focus(XCB::INPUT_FOCUS_POINTER_ROOT, win, XCB::NONE)
     conn.flush
   end
@@ -199,12 +205,12 @@ class Wm
       conn.grab_button(1,
                        win,
                        XCB::EVENT_MASK_BUTTON_PRESS,
-                       XCB::GRAB_MODE_ASYNC,
+                       XCB::GRAB_MODE_SYNC,
                        XCB::GRAB_MODE_ASYNC,
                        XCB::WINDOW_NONE,
                        XCB::NONE,
                        button,
-                       MOUSE_MASK)
+                       XCB::MOD_MASK_ANY)
     end
   end
 
