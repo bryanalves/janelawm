@@ -2,6 +2,47 @@ module XCB
   class Connection
     attr_reader :connection, :connection_io
 
+    private
+
+    def self.register_connection_function(name)
+      define_method name do |*args|
+        XCB.send(name, *([@connection] + args))
+      end
+    end
+
+    public
+
+    register_connection_function :disconnect
+    register_connection_function :change_property
+    register_connection_function :get_property
+    register_connection_function :get_property_reply
+    register_connection_function :map_window
+    register_connection_function :set_input_focus
+    register_connection_function :get_setup
+    register_connection_function :wait_for_event
+    register_connection_function :poll_for_event
+    register_connection_function :get_file_descriptor
+    register_connection_function :connection_has_error
+    register_connection_function :flush
+    register_connection_function :setup_roots_iterator
+    register_connection_function :get_setup
+    register_connection_function :change_window_attributes
+    register_connection_function :grab_button
+    register_connection_function :intern_atom
+    register_connection_function :intern_atom_reply
+    register_connection_function :grab_pointer
+    register_connection_function :grab_pointer_reply
+    register_connection_function :configure_window
+    register_connection_function :query_pointer
+    register_connection_function :query_pointer_reply
+    register_connection_function :get_geometry
+    register_connection_function :get_geometry_reply
+    register_connection_function :query_tree
+    register_connection_function :query_tree_reply
+    register_connection_function :get_window_attributes
+    register_connection_function :get_window_attributes_reply
+    register_connection_function :ungrab_pointer
+
     def initialize
       @connection = XCB::connect(nil, 0)
       @connection_io = IO.open(get_file_descriptor)
@@ -41,5 +82,6 @@ module XCB
       coords.write_array_of_int([x, y])
       configure_window(win, XCB::CONFIG_WINDOW_X | XCB::CONFIG_WINDOW_Y, coords)
     end
+
   end
 end
